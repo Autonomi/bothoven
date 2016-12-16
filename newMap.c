@@ -1,15 +1,17 @@
+#include <stdio.h>
+#include <stdlib.h>
 #define size 5
 #define INF 100000
 
 struct Triangle {
 	int index;
-	int type;					//1 signifies l type triangle and 2 signifies r type
+	int type;					//0 signifies l type triangle and 1 signifies r type
 	int nodes[size][size];		//Stores connectivity of nodes within the triangle
 };
 
 //Setting up triangle as l type or r type
-struct Triangle* setUp (int type) {
-	struct Triangle temp = (struct Triangle*) malloc (sizeof (struct Triangle));	//Check if the syntax is correct 
+struct Triangle* setUp (int type, int index) {
+	struct Triangle *temp = malloc (sizeof (*temp));	//Check if the syntax is correct 
 	//Maintains links of nodes that are connected	
 	for (int i = 0; i < size; i++)
 		for (int j = 0; j < size; j++)
@@ -18,6 +20,7 @@ struct Triangle* setUp (int type) {
 	temp->nodes[2][3] = temp->nodes[3][2] = 1;
 	temp->nodes[2][4] = temp->nodes[4][2] = 1;
 	temp->type = type;												//Assigns type to the triangle
+	temp->index = index;
 	return temp;
 }
 
@@ -26,12 +29,12 @@ struct triangleLink {
 	int links[size][size];
 	//linkType maintains the type of link, lID maintains the id of triangle towards the left
 	//And rID maintains the ID of triangle towards the right
-	//For linkType, 1 indicates l to r and 2 indicates r to l
+	//For linkType, 0 indicates l to r and 1 indicates r to l
 	int linkType, lID, rID;		
 };
 
 struct triangleLink* setLink (struct Triangle *left, struct Triangle *right) {
-	struct triangleLink *temp = new struct triangleLink ();
+	struct triangleLink *temp = malloc(sizeof(*temp));
 	temp->linkType = left->type;
 	temp->lID = left->index;
 	temp->rID = right->index;
@@ -59,6 +62,22 @@ void updateTriangle (struct Triangle *update, int nodeL, int nodeR, int weight) 
 //Updates link weights if obstacle is encountered
 void updateLink (struct triangleLink* update, int nodeL, int nodeR,int weight) {
 	update->links[nodeL][nodeR] = weight;
+}
+
+int main() {
+	struct Triangle* map[6];
+	for (int i = 0; i < 6; i++) {
+		map[i] = setUp(i%2, i);
+	}
+	for (int i = 5; i < 6; i++) {
+		for (int j = 0; j < size; j++) {
+			for (int k = 0; k < size; k++) {
+				printf("%d  ", map[i]->nodes[j][k]);
+			}
+			printf("\n");
+		}
+	}
+	return 0;
 }
 
 #undef size
